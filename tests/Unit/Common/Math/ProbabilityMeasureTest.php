@@ -44,6 +44,15 @@ class ProbabilityMeasureTest extends TestCase
         $this->assertTrue($expected->isEqualTo($probMeasure->relativeWhere($condition)));
     }
 
+    /**
+     * @dataProvider probMeasureSamplingProvider
+     * @test
+     */
+    public function 確率測度に従ったサンプリングのテスト($expectedSamplePoint, ProbabilityMeasure $probMeasure, Ratio $randomValue): void
+    {
+        $this->assertEquals($expectedSamplePoint, $probMeasure->samplingFrom($randomValue));
+    }
+
     public static function probMeasureEqualityProvider(): array
     {
         return [
@@ -149,6 +158,52 @@ class ProbabilityMeasureTest extends TestCase
                 function (Ratio $probValue, string $samplePoint): bool {
                     return $samplePoint === 'sample1' || $samplePoint === 'sample2';
                 }
+            ],
+        ];
+    }
+
+    public static function probMeasureSamplingProvider(): array
+    {
+        $probMeasure = new ProbabilityMeasure([
+            'sample1' => new Ratio(1, 1),
+            'sample2' => new Ratio(2, 1),
+            'sample3' => new Ratio(3, 1),
+        ]);
+        return [
+            '標本空間の重みの集合が{1,2,3}で0に対してはsample1' => [
+                'sample1',
+                $probMeasure,
+                new Ratio(0, 6),
+            ],
+            '標本空間の重みの集合が{1,2,3}で0より大きく1/6未満に対してはsample1' => [
+                'sample1',
+                $probMeasure,
+                new Ratio(1, 7),
+            ],
+            '標本空間の重みの集合が{1,2,3}で1/6に対してはsample1' => [
+                'sample1',
+                $probMeasure,
+                new Ratio(1, 6),
+            ],
+            '標本空間の重みの集合が{1,2,3}で1/6より大きく3/6未満の値に対してはsample2' => [
+                'sample2',
+                $probMeasure,
+                new Ratio(2, 6),
+            ],
+            '標本空間の重みの集合が{1,2,3}で3/6に対してはsample2' => [
+                'sample2',
+                $probMeasure,
+                new Ratio(3, 6),
+            ],
+            '標本空間の重みの集合が{1,2,3}で3/6より大きく1未満の値に対してはsample3' => [
+                'sample3',
+                $probMeasure,
+                new Ratio(4, 6),
+            ],
+            '標本空間の重みの集合が{1,2,3}で1に対してはsample3' => [
+                'sample3',
+                $probMeasure,
+                new Ratio(6, 6),
             ],
         ];
     }
