@@ -124,6 +124,7 @@ class RatioTest extends TestCase
     public static function ratioArrayProvider(): array
     {
         return [
+            '1:2の合計は1:2' => [new Ratio(1, 2), [new Ratio(1, 2)]],
             '1:2と1:3の合計は5:6' => [new Ratio(5, 6), [new Ratio(1, 2), new Ratio(1, 3)]],
             '1:2と1:3と1:6の合計は1:1' => [new Ratio(1, 1), [new Ratio(1, 2), new Ratio(1, 3), new Ratio(1, 6)]],
             '1:2と1:3と1:6と1:12の合計は13:12' => [new Ratio(13, 12), [new Ratio(1, 2), new Ratio(1, 3), new Ratio(1, 6), new Ratio(1, 12)]],
